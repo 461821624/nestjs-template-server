@@ -12,15 +12,25 @@ import { TransformInterceptor } from './interceptor/transform.interceptor';
 import * as config from 'config';
 import { HttpExceptionsFilter } from './common/filters/http-exceptions-filter';
 import { ExceptionsFilter } from './common/filters/exceptions.filter';
-
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
+import * as session from 'express-session';
+console.log(config.get('db'));
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   });
   app.use(
     rateLimit({
       windowMs: 15 * 60 * 1000, // 15分钟
       max: 1000, // 限制15分钟内最多只能访问1000次
+    }),
+  );
+  app.use(
+    session({
+      secret: 'my-secret',
+      resave: false,
+      saveUninitialized: false,
     }),
   );
   /**
@@ -47,7 +57,11 @@ async function bootstrap() {
       // skipNullProperties: true,
     }),
   );
-
+  // 模板引擎
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  console.log(join(__dirname, '..', 'public'));
+  app.setViewEngine('hbs');
   app.useGlobalInterceptors(new TransformInterceptor());
   // 所有异常
   app.useGlobalFilters(new ExceptionsFilter());
@@ -65,4 +79,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-

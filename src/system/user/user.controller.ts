@@ -10,23 +10,21 @@ import {
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
+
 import { ApiBearerAuth, ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { ResultData } from '../../common/dto/result-data.dto';
 import { ApiResult } from '../../common/decorator/api-result.decorator';
 import { FindUserDao } from './dao/find-user.dao';
 import { PageQueryDto } from '../../common/dto/page-query.dto';
+
 @ApiTags('User')
 @ApiBearerAuth()
 @Controller('user')
 @ApiExtraModels(ResultData, FindUserDao, PageQueryDto)
 export class UserController {
   constructor(private readonly userService: UserService) {}
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
+
   @ApiResult(FindUserDao)
   @Get('profile')
   @UseInterceptors(ClassSerializerInterceptor)

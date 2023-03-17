@@ -1,0 +1,19 @@
+
+db:
+  type: 'mysql'
+  host: "110.41.22.228"
+  port: 4306
+  username: "root"
+  password: "venus-CHROMALED123"
+  database: "nest-server"
+  dateStrings: true,
+  autoLoadEntities: true,
+  bigNumberStrings: true,
+  logging": 
+    - query
+    - error
+redis:
+  host: '110.41.22.228'
+  port: 6379
+  password: ''
+
