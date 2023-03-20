@@ -9,7 +9,7 @@ db:
   dateStrings: true,
   autoLoadEntities: true,
   bigNumberStrings: true,
-  logging": 
+  logging: 
     - query
     - error
 redis:

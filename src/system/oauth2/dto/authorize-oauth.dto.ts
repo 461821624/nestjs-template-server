@@ -11,4 +11,8 @@ export class AuthorizeOAuth2 {
   @ApiProperty({ description: '鉴权模式' })
   @IsNotEmpty()
   response_type: string;
+  state: string;
+  @ApiProperty({ description: '鉴权模式' })
+  @IsNotEmpty()
+  secret: string;
 }

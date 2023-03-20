@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateOauth2ClientDto } from './dto/create-oauth2-client.dto';
 
 import { PageQueryDto } from '../../common/dto/page-query.dto';
@@ -11,20 +11,54 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
 import { Response } from 'express';
 import { AuthorizeOAuth2 } from './dto/authorize-oauth.dto';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
 @Injectable()
 export class Oauth2Service {
-  authorize(authorizeOAuth2: AuthorizeOAuth2, req: any, res: Response) {
-    console.log(req.user);
-    return res.render('index');
-  }
   constructor(
     @InjectRepository(Oauth2Client)
     private oauth2ClientRepository: Repository<Oauth2Client>,
+    private readonly jwtService: JwtService, // private readonly usersService: UserService,
   ) {}
+  /**
+   * 验证客户端参数
+   * @param req 参数
+   * @param res 响应
+   */
+  async verifyClent(req: AuthorizeOAuth2, res: any) {
+    const { state, client_id, secret, redirect_uri, response_type } = req;
+    const client = await this.oauth2ClientRepository.findOne({
+      where: {
+        client_id,
+        secret,
+      },
+    });
+    if (!client) {
+      throw new Error('无此应用');
+    }
+    console.log(redirect_uri);
+    if (!client.redirect_uris.includes(redirect_uri))
+      throw new Error('参数错误');
+    res.render('index', {
+      logo: client.logo,
+    });
+  }
+  generateToken(code: any, redirect_uri: any, user: any) {
+    throw new Error('Method not implemented.');
+  }
+  validateRedirectUri(user: any, redirect_uri: any) {
+    throw new Error('Method not implemented.');
+  }
+  generateAuthorizationCode(user: any) {
+    throw new Error('Method not implemented.');
+  }
   create(createOauth2Dto: CreateOauth2ClientDto) {
     return 'This action adds a new oauth2';
   }
-
+  validateOAuthUser(profile: any) {
+    return null;
+  }
   async findAll(params: any, option: IPaginationOptions) {
     const { keyword, sortBy, descending } = params;
     const search = keyword || '';
@@ -83,5 +117,57 @@ export class Oauth2Service {
 
   remove(id: number) {
     return `This action removes a #${id} oauth2`;
+  }
+  async generateTokenFromRefreshToken(refreshToken: string): Promise<any> {
+    try {
+      // Verify and decode the refresh token
+      const decodedToken = this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+      });
+
+      // Check if the refresh token is expired
+      if (decodedToken.exp <= Math.floor(Date.now() / 1000)) {
+        throw new Error('Refresh token is expired');
+      }
+
+      // Find the user associated with the refresh token
+      // const user = await this.usersService.findById(decodedToken.sub);
+      const user: any = {};
+      // Generate a new access token and refresh token
+      const accessToken = this.generateAccessToken(user);
+      const newRefreshToken = this.generateRefreshToken(user);
+
+      return {
+        access_token: accessToken,
+        token_type: 'Bearer',
+        expires_in: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME,
+        refresh_token: newRefreshToken,
+      };
+    } catch (err) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
+  private generateRefreshToken(user: User): string {
+    const payload = {
+      sub: user.id,
+      name: user.username,
+    };
+
+    const expiresIn = process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME;
+    const secret = process.env.JWT_REFRESH_TOKEN_SECRET;
+
+    return this.jwtService.sign(payload, { expiresIn, secret });
+  }
+
+  private generateAccessToken(user: User): string {
+    const payload = {
+      sub: user.id,
+      name: user.username,
+    };
+
+    const expiresIn = process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME;
+    const secret = process.env.JWT_ACCESS_TOKEN_SECRET;
+
+    return this.jwtService.sign(payload, { expiresIn, secret });
   }
 }
