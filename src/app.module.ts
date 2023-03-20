@@ -8,7 +8,6 @@ import { TenantModule } from './system/tenant/tenant.module';
 import * as config from 'config';
 import { RedisModule } from '@liaoliaots/nestjs-redis';
 import { MenuModule } from './system/menu/menu.module';
-import { Oauth2Module } from './system/oauth2/oauth2.module';
 
 @Module({
   imports: [
@@ -26,7 +25,6 @@ import { Oauth2Module } from './system/oauth2/oauth2.module';
       },
     }),
     MenuModule,
-    Oauth2Module,
   ],
   controllers: [],
   providers: [
