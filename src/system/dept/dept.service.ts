@@ -29,8 +29,8 @@ export class DeptService {
 
     return ResultData.ok(dept.sort((a, b) => a.sort - b.sort));
   }
-  findDeptAll() {
-    return `This action returns all dept`;
+  async findDeptAll() {
+    return await this.deptRepository.find();
   }
 
   findOne(id: number) {

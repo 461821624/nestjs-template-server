@@ -13,16 +13,9 @@ export class MenuService {
   constructor(
     @InjectRepository(Menu) private menuRepository: Repository<Menu>,
   ) {}
-  create(createMenuDto: CreateMenuDto) {
-    return 'This action adds a new menu';
-  }
 
   async findAll() {
-    const promise = await this.menuRepository.find();
-    const arrayToTree1 = arrayToTree(promise, 0);
-    // const data = JSON.parse(JSON.stringify(promise));
-    // const buildTreeByList1 = buildTreeByList(data);
-    return ResultData.ok(arrayToTree1);
+    return await this.menuRepository.find();
   }
 
   async findOne(id: number) {

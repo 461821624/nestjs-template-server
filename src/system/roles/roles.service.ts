@@ -84,15 +84,16 @@ export class RolesService {
   async getUserMenu(menu_id: string[], type: number[], status: number) {
     return await this.menuService.findListByIds(menu_id, type, status);
   }
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  // 查询全部system_role_menu
+  async findAllRoleMenu() {
+    return await this.roleMenuRepository.find();
   }
-
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  // 查询全部system_user_role
+  async findAllUserRole() {
+    return await this.userRoleRepository.find();
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} role`;
+  // 查询全部system_role
+  async findAllRole() {
+    return await this.roleRepository.find();
   }
 }

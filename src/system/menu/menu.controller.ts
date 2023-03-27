@@ -5,8 +5,12 @@ import {
   Body,
   Patch,
   Param,
-  Delete, UseInterceptors, ClassSerializerInterceptor, UseGuards, Request
-} from "@nestjs/common";
+  Delete,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { MenuService } from './menu.service';
 import { CreateMenuDto } from './dto/create-menu.dto';
 import { UpdateMenuDto } from './dto/update-menu.dto';
@@ -15,7 +19,7 @@ import { ApiResult } from '../../common/decorator/api-result.decorator';
 
 import { ResultData } from '../../common/dto/result-data.dto';
 import { TreeMenuDao } from './dao/tree-menu.dao';
-import { AuthGuard } from "@nestjs/passport";
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('菜单')
 @ApiExtraModels(ResultData, TreeMenuDao)
@@ -23,14 +27,11 @@ import { AuthGuard } from "@nestjs/passport";
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
-  @Post()
-  create(@Body() createMenuDto: CreateMenuDto) {
-    return this.menuService.create(createMenuDto);
-  }
   @ApiResult(TreeMenuDao)
   @Get('list')
   async findAll(): Promise<ResultData> {
-    return await this.menuService.findAll();
+    const menu = await this.menuService.findAll();
+    return ResultData.ok(menu);
   }
   @ApiResult(TreeMenuDao)
   @Get()
