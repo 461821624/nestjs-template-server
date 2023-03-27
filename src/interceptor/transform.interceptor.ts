@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
 import { Logger } from '../common/utils/log4j.util';
+import * as moment from 'moment';
 
 @Injectable()
 export class TransformInterceptor implements NestInterceptor {
@@ -17,7 +18,7 @@ export class TransformInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         if (data) {
-          console.log(data);
+          this.format_date(data.data);
           const logFormat = `-----------------------------------------------------------------------
           Request original url: ${req.originalUrl}
           Method: ${req.method}
@@ -33,5 +34,23 @@ export class TransformInterceptor implements NestInterceptor {
         }
       }),
     );
+  }
+  // q: 解释下面代码
+
+  format_date(data) {
+    for (const key in data) {
+      if (
+        key === 'create_time' ||
+        key === 'update_time' ||
+        key === 'login_date'
+      ) {
+        data[key] = moment(data[key]).format('YYYY-MM-DD HH:mm:ss');
+      } else if (typeof data[key] === 'object' && data[key] !== null) {
+        this.format_date(data[key]);
+      }
+      if (key === 'password') {
+        delete data[key];
+      }
+    }
   }
 }

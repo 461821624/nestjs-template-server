@@ -6,9 +6,9 @@ db:
   username: "root"
   password: "venus-CHROMALED123"
   database: "nest-server"
-  dateStrings: true,
   autoLoadEntities: true,
   bigNumberStrings: true,
+  dateStrings: true
   logging: 
     - query
     - error

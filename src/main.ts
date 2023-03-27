@@ -15,7 +15,6 @@ import { ExceptionsFilter } from './common/filters/exceptions.filter';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import * as session from 'express-session';
-console.log(config.get('db'));
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,

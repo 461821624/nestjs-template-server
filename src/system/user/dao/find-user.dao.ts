@@ -1,10 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../entities/user.entity';
 
 export class FindUserDao {
+  constructor(user: User) {
+    this.id = user.id;
+    this.nickname = user.nickname;
+    this.username = user.username;
+    this.remark = user.remark;
+    this.dept_id = user.dept_id;
+    this.email = user.email;
+    this.mobile = user.mobile;
+    this.sex = user.sex;
+    this.avatar = user.avatar;
+    this.status = user.status;
+    this.login_ip = user.login_ip;
+    this.create_time = user.create_time;
+    // this.dept = { id: user.dept_id, name: '' };
+    this.loginDate = user.login_date;
+    this.postIds = JSON.parse(user.post_ids);
+  }
   @ApiProperty({
     description: '用户id',
   })
-  id: bigint;
+  id: string;
   @ApiProperty()
   nickname: string;
   @ApiProperty()
@@ -12,9 +30,7 @@ export class FindUserDao {
   @ApiProperty()
   remark: string;
   @ApiProperty()
-  dept_id: bigint;
-  @ApiProperty()
-  post_ids: string;
+  dept_id: string;
   @ApiProperty()
   email: string;
   @ApiProperty()
@@ -28,15 +44,11 @@ export class FindUserDao {
   @ApiProperty()
   login_ip: string;
   @ApiProperty()
-  login_date: string;
-  @ApiProperty()
-  creator: string;
-  @ApiProperty()
   create_time: Date;
   @ApiProperty()
-  updater: string;
+  dept: { id: FindUserDao['dept_id']; name: string };
   @ApiProperty()
-  update_time: Date;
+  loginDate: string;
   @ApiProperty()
-  tenant_id: bigint;
+  postIds: number[];
 }

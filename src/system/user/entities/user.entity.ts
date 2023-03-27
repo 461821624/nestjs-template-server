@@ -1,8 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { BaseEntity } from '../../../common/entities/base.entity';
 
 @Entity('system_users')
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: string;
   @Column({ type: 'varchar', length: 30 })
@@ -32,15 +33,7 @@ export class User {
   login_ip: string;
   @Column({ type: 'datetime' })
   login_date: string;
-  @Column({ type: 'varchar', length: 64 })
-  creator: string;
-  @Column({ type: 'datetime' })
-  create_time: Date;
-  @Column({ type: 'varchar', length: 64 })
-  updater: string;
-  @Column({ type: 'datetime' })
-  update_time: Date;
-  @Exclude()
-  @Column({ type: 'tinyint' })
-  deleted: number;
+  @Column({ type: 'bigint' })
+  tenant_id: string;
+  dept: any;
 }

@@ -1,5 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { Exclude } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 
 @Entity('system_role')
 export class Role {
