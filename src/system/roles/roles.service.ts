@@ -60,7 +60,7 @@ export class RolesService {
     });
     const roles = this.roleRepository.find({
       where: {
-        //查询id为1,2,3的数据
+        //查询id为1,2的数据
         id: In(user_role.map((item) => item.role_id)),
         status: status,
       },

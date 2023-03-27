@@ -98,16 +98,6 @@ export class UserService {
 
   async findUser(params: any, childrenDept = null, option: IPaginationOptions) {
     const { username, mobile, status, createTime, deptId } = params;
-    // const search = keyword || '';
-    // const sort = sortBy || 'create_time';
-    // const des = descending || 'ASC';
-    // let deptIds = [];
-    // if (deptId) {
-    //   //查找出所有子部门id，包括自身
-    //   deptIds = await this.deptService.findChildDeptIds(deptId);
-    //   deptIds.push(deptId);
-    // }
-    // console.log(deptIds);
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
     if (username) {
       queryBuilder.andWhere('user.username LIKE :username', {
@@ -137,16 +127,6 @@ export class UserService {
 
     queryBuilder.andWhere('user.deleted = :deleted', { deleted: 0 });
     queryBuilder.andWhere('user.tenant_id = :tenant_id', { tenant_id: 1 });
-    // if (search) {
-    //   queryBuilder
-    //     .where('user.name LIKE :name', { name: '%' + search + '%' })
-    //     .andWhere('user.deleted = :deleted', { deleted: 0 })
-    //     .orderBy(`user.${sort}`, des); // Or whatever you need to do
-    // } else {
-    //   queryBuilder
-    //     .orderBy(`user.${sort}`, des)
-    //     .where('user.deleted = :deleted', { deleted: 0 }); // Or whatever you need to do
-    // }
     const user = await paginate<User>(queryBuilder, option);
     return {
       list: await user.items.map((item) => new FindUserDao(item)),
@@ -215,22 +195,51 @@ export class UserService {
   }
   async getUserMenu(userId: any) {
     // 获得角色列表
-    const roles = await this.rolesService.findByUserId(
-      userId,
-      StatusEnum.ENABLE,
+
+    // 获取system_user_role缓存
+    const system_user_role = JSON.parse(
+      await this.client.get(`${config.get('server.name')}:system_user_role`),
     );
+
+    // system_user_role中筛选出user_id等于userId的数据
+    const userRole = system_user_role.filter(
+      (item) => Number(item.user_id) === userId,
+    );
+    const system_role = JSON.parse(
+      await this.client.get(`${config.get('server.name')}:system_role`),
+    );
+
+    // 根据userRole中的role_id和StatusEnum.ENABLE在system_role缓存中筛选出对应id和status的数据
+    const roles = system_role.filter(
+      (item) =>
+        userRole.map((item) => item.role_id).includes(item.id) &&
+        item.status === StatusEnum.ENABLE,
+    );
+    // 获取system_role_menu缓存
+    const system_role_menu = JSON.parse(
+      await this.client.get(`${config.get('server.name')}:system_role_menu`),
+    );
+
     // 获得用户拥有的菜单列表,只要目录和菜单类型
-    const type = [MenuTypeEnum.DIR, MenuTypeEnum.MENU];
-    const user_menu = await this.rolesService.findMenuByRoleIds(
-      (await roles).map((item) => item.id),
+
+    // 筛选出system_role_menu中role_id等于roles中id的数据
+    const user_menu = system_role_menu.filter((item) =>
+      roles.map((item) => item.id).includes(item.role_id),
     );
-    const menu_list = await this.rolesService.getUserMenu(
-      user_menu.map((item) => item.menu_id),
-      type,
-      StatusEnum.ENABLE,
+
+    // 获取system_menu缓存
+    const system_menu = JSON.parse(
+      await this.client.get(`${config.get('server.name')}:system_menu`),
     );
-    //menu转换成 Tree 结构返回
-    // new Tree('closure-table', 'id', 'parent_id', 'children').transform();
+
+    // 筛选出system_menu中id等于user_menu中menu_id并且status等于StatusEnum.ENABLE，type===MenuTypeEnum.DIR||type===MenuTypeEnum.MENU的数据
+    const menu_list = system_menu.filter(
+      (item) =>
+        user_menu.map((item) => Number(item.menu_id)).includes(item.id) &&
+        item.status === StatusEnum.ENABLE &&
+        (item.type === MenuTypeEnum.DIR || item.type === MenuTypeEnum.MENU),
+    );
+
     const tree = arrayToTree(menu_list, 0);
     return ResultData.ok(tree);
   }
