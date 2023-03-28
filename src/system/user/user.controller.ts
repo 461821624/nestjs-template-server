@@ -3,14 +3,14 @@ import {
   Get,
   Post,
   Body,
-  Request,
   UseGuards,
   ClassSerializerInterceptor,
   UseInterceptors,
   Query,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-
+import { Request } from 'express';
 import {
   ApiBearerAuth,
   ApiExtraModels,
@@ -52,14 +52,17 @@ export class UserController {
   @Post('login')
   @ApiOperation({ summary: '用户登录' })
   @AllowAnon()
-  async login(@Body() loginUserDto: LoginUserDto): Promise<ResultData> {
-    return await this.userService.findByUsername(loginUserDto);
+  async login(
+    @Req() request: Request,
+    @Body() loginUserDto: LoginUserDto,
+  ): Promise<ResultData> {
+    return await this.userService.findByUsername(request, loginUserDto);
   }
   @ApiResult(FindUserDao)
   @Get('profile')
   @ApiOperation({ summary: '用户信息' })
   @UseInterceptors(ClassSerializerInterceptor)
-  async getUserProfile(@Request() req): Promise<ResultData> {
+  async getUserProfile(@Req() req): Promise<ResultData> {
     return await this.userService.getUserProfile(req.user.userId);
   }
 
@@ -92,20 +95,20 @@ export class UserController {
   @Get('permission')
   @ApiOperation({ summary: '用户的权限列表' })
   @ApiResult(UserPermissionDto)
-  async getUserPermission(@Request() req): Promise<ResultData> {
+  async getUserPermission(@Req() req): Promise<ResultData> {
     return await this.userService.getUserPermission(req.user.userId);
   }
 
   @Get('menu')
   @ApiOperation({ summary: '用户的菜单列表' })
   @ApiResult(FindUserMenuDto, true)
-  async getUserMenu(@Request() req): Promise<ResultData> {
+  async getUserMenu(@Req() req): Promise<ResultData> {
     return await this.userService.getUserMenu(req.user.userId);
   }
   // 用户退出
   @Get('logout')
   @ApiOperation({ summary: '用户退出' })
-  async logout(@Request() req): Promise<ResultData> {
+  async logout(): Promise<ResultData> {
     // return await this.userService.logout(req.user.userId);
     return null;
   }

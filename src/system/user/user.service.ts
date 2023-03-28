@@ -18,6 +18,8 @@ import { StatusEnum } from '../../common/enums/status-enum';
 import { MenuTypeEnum } from '../../common/enums/menu-type';
 import { arrayToTree } from '../../common/utils/arrayToTree';
 import { DeptService } from '../dept/dept.service';
+import { Request } from 'express';
+import * as dayjs from 'dayjs';
 @Injectable()
 export class UserService {
   constructor(
@@ -54,7 +56,7 @@ export class UserService {
    * @param loginUserDto 登录参数
    * @returns access_token token
    */
-  async findByUsername(loginUserDto: LoginUserDto) {
+  async findByUsername(request: Request, loginUserDto: LoginUserDto) {
     const { username, password, tenant_id } = loginUserDto;
     console.log(username, password, tenant_id);
     const user = await this.validateUsername(username, tenant_id);
@@ -76,6 +78,15 @@ export class UserService {
       username: user.username,
       sub: user.id,
     });
+    await this.usersRepository.update(user.id, {
+      login_ip: request.ip,
+      login_date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    });
+    await this.client.set(
+      `${config.get('server.name')}:user_id`,
+      JSON.stringify(user),
+    );
+    //更新用户表中的
     return ResultData.ok({ access_token });
   }
   async getUserProfile(id: any) {

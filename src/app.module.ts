@@ -1,4 +1,11 @@
-import { Module, OnApplicationBootstrap, ValidationPipe } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  OnApplicationBootstrap,
+  RequestMethod,
+  ValidationPipe,
+} from '@nestjs/common';
 import { UserModule } from './system/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './system/auth/auth.module';
@@ -18,6 +25,8 @@ import Chalk from 'chalk';
 import { Logger } from './common/utils/log4j.util';
 import { DeptService } from './system/dept/dept.service';
 import { RolesService } from './system/roles/roles.service';
+import { LoggingMiddleware } from './common/middleware/logger.middleware';
+// import * as requestIp from 'request-ip';
 @Module({
   imports: [
     UserModule,
@@ -53,7 +62,7 @@ import { RolesService } from './system/roles/roles.service';
     },
   ],
 })
-export class AppModule implements OnApplicationBootstrap {
+export class AppModule implements OnApplicationBootstrap, NestModule {
   // q: 为什么要实现OnApplicationBootstrap接口？
   // a: 因为我们需要在应用启动时，缓存一些数据，比如菜单、角色、用户等等
   //    这些数据在应用启动时就需要缓存，而不是在第一次请求时才缓存
@@ -73,6 +82,12 @@ export class AppModule implements OnApplicationBootstrap {
     private readonly deptService: DeptService,
     private readonly rolesService: RolesService,
   ) {}
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggingMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+    // consumer.apply(requestIp.mw()).forRoutes('*');
+  }
   async onApplicationBootstrap() {
     // 缓存菜单
     const cacheMenu = await this.menuService.findAll();

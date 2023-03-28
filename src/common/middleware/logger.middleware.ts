@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { Logger } from '../utils/log4j.util';
-
-export function logger(req: Request, res: Response, next: NextFunction) {
-  const statusCode = res.statusCode;
-  const logFormat = `   -----------------------------------------------------------------------
+import { Injectable, NestMiddleware } from '@nestjs/common';
+@Injectable()
+export class LoggingMiddleware implements NestMiddleware {
+  use(req: Request, res: Response, next: (error?: any) => void) {
+    const statusCode = res.statusCode;
+    const logFormat = `   -----------------------------------------------------------------------
     RequestOriginal: ${req.originalUrl}
     Method: ${req.method}
     IP: ${req.ip}
@@ -12,15 +14,19 @@ export function logger(req: Request, res: Response, next: NextFunction) {
     Query: ${JSON.stringify(req.query)}
     Body: ${JSON.stringify(req.body)}
     -----------------------------------------------------------------------`;
+    console.log('111111111', req.clientIp);
+    next();
 
-  next();
-
-  if (statusCode >= 500) {
-    Logger.error(logFormat);
-  } else if (statusCode >= 400) {
-    Logger.warn(logFormat);
-  } else {
-    Logger.access(logFormat);
-    Logger.log(logFormat);
+    if (statusCode >= 500) {
+      Logger.error(logFormat);
+    } else if (statusCode >= 400) {
+      Logger.warn(logFormat);
+    } else {
+      Logger.access(logFormat);
+      Logger.log(logFormat);
+    }
   }
+  // logger(req: Request, res: Response, next: NextFunction) {
+
+  // }
 }
