@@ -6,8 +6,7 @@ import {
 } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
 import { Logger } from '../common/utils/log4j.util';
-import * as moment from 'moment';
-
+import * as dayjs from 'dayjs';
 @Injectable()
 export class TransformInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -44,7 +43,7 @@ export class TransformInterceptor implements NestInterceptor {
         key === 'update_time' ||
         key === 'login_date'
       ) {
-        data[key] = moment(data[key]).format('YYYY-MM-DD HH:mm:ss');
+        data[key] = dayjs(data[key]).format('YYYY-MM-DD HH:mm:ss');
       } else if (typeof data[key] === 'object' && data[key] !== null) {
         this.format_date(data[key]);
       }

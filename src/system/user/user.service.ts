@@ -151,8 +151,19 @@ export class UserService {
     return user;
   }
   async getUserPermission(userId: string) {
-    // 1. 从redis中获取用户信息
-
+    // 1. 获取用户信息
+    const result = await this.client.get(
+      `${config.get('server.name')}:user_id`,
+    );
+    if (!result) {
+      const user = await this.usersRepository.findOneBy({
+        id: userId,
+      });
+      await this.client.set(
+        `${config.get('server.name')}:user_id`,
+        JSON.stringify(user),
+      );
+    }
     const { id, nickname, avatar }: UserParams = JSON.parse(
       await this.client.get(`${config.get('server.name')}:user_id`),
     );

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { Logger } from './log4j.util';
+import { Logger } from '../utils/log4j.util';
 
 export function logger(req: Request, res: Response, next: NextFunction) {
   const statusCode = res.statusCode;

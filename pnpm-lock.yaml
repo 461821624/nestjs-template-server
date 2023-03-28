@@ -43,7 +43,6 @@ specifiers:
   ioredis: ^5.3.1
   jest: 29.3.1
   log4js: ^6.8.0
-  moment: ^2.29.4
   mysql2: ^3.1.2
   nestjs-typeorm-paginate: ^4.0.3
   passport: ^0.6.0
@@ -88,7 +87,6 @@ dependencies:
   helmet: 6.0.1
   ioredis: 5.3.1
   log4js: 6.8.0
-  moment: 2.29.4
   mysql2: 3.1.2
   nestjs-typeorm-paginate: 4.0.3_hwqi6m23qtfynime4zjdunqtvi
   passport: 0.6.0
@@ -6094,10 +6092,6 @@ packages:
     resolution: {integrity: sha512-sjAkg21peAG9HS+Dkx7hlG9Ztx7HLeKnvB3NQRcu/mltCVmvkF0pisbiTSfDVYTT86XEfZrTUosLdZLStquZUw==}
     engines: {node: '>=10'}
     hasBin: true
-    dev: false
-
-  /moment/2.29.4:
-    resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}
     dev: false
 
   /morgan/1.10.0:

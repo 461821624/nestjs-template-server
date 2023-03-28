@@ -2,7 +2,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import Chalk from 'chalk';
 import { mw as requestIpMw } from 'request-ip';
-import { logger } from './common/utils/logger.middleware';
+import { logger } from './common/middleware/logger.middleware';
 import { Logger } from './common/utils/log4j.util';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
