@@ -17,12 +17,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 import { ResultData } from '../../common/dto/result-data.dto';
 import { ApiResult } from '../../common/decorator/api-result.decorator';
 import { FindUserDao } from './dao/find-user.dao';
 import { PageQueryDto } from '../../common/dto/page-query.dto';
-import { AuthService } from '../auth/auth.service';
 import { UserTokenDto } from './dto/user-token.tdo';
 import { LoginUserDto } from './dto/login-user.dto';
 import { AllowAnon } from '../..//common/decorator/allow-anon.decorator';

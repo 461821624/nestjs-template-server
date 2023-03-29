@@ -5,7 +5,6 @@ import {
   ArgumentsHost,
 } from '@nestjs/common';
 import { Logger } from '../utils/log4j.util';
-
 @Catch(HttpException)
 export class HttpExceptionsFilter implements ExceptionFilter {
   catch(exception: any, host: ArgumentsHost) {

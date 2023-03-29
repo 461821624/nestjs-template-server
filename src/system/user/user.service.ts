@@ -83,22 +83,23 @@ export class UserService {
       login_date: dayjs().format('YYYY-MM-DD HH:mm:ss'),
     });
     await this.client.set(
-      `${config.get('server.name')}:user_id`,
+      `${config.get('server.name')}:user_id_${user.id}`,
       JSON.stringify(user),
     );
+    await this.getUserProfile(user.id);
     //更新用户表中的
     return ResultData.ok({ access_token });
   }
   async getUserProfile(id: any) {
     const result = await this.client.get(
-      `${config.get('server.name')}:user_id`,
+      `${config.get('server.name')}:user_id_${id}`,
     );
     if (!result) {
       const user = await this.usersRepository.findOneBy({
         id: id,
       });
       await this.client.set(
-        `${config.get('server.name')}:user_id`,
+        `${config.get('server.name')}:user_id_${id}`,
         JSON.stringify(user),
       );
       return ResultData.ok(new FindUserDao(user));
@@ -164,19 +165,19 @@ export class UserService {
   async getUserPermission(userId: string) {
     // 1. 获取用户信息
     const result = await this.client.get(
-      `${config.get('server.name')}:user_id`,
+      `${config.get('server.name')}:user_id_${userId}}`,
     );
     if (!result) {
       const user = await this.usersRepository.findOneBy({
         id: userId,
       });
       await this.client.set(
-        `${config.get('server.name')}:user_id`,
+        `${config.get('server.name')}:user_id_${userId}}`,
         JSON.stringify(user),
       );
     }
     const { id, nickname, avatar }: UserParams = JSON.parse(
-      await this.client.get(`${config.get('server.name')}:user_id`),
+      await this.client.get(`${config.get('server.name')}:user_id_${userId}}}`),
     );
     // 2. 获取用户角色信息
 

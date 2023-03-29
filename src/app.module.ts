@@ -10,7 +10,7 @@ import { UserModule } from './system/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './system/auth/auth.module';
 import { RolesModule } from './system/roles/roles.module';
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { TenantModule } from './system/tenant/tenant.module';
 import * as config from 'config';
 import { InjectRedis, RedisModule } from '@liaoliaots/nestjs-redis';
@@ -26,6 +26,8 @@ import { Logger } from './common/utils/log4j.util';
 import { DeptService } from './system/dept/dept.service';
 import { RolesService } from './system/roles/roles.service';
 import { LoggingMiddleware } from './common/middleware/logger.middleware';
+import { LoggerModule } from './infra/logger/logger.module';
+import { TransformInterceptor } from './interceptor/transform.interceptor';
 // import * as requestIp from 'request-ip';
 @Module({
   imports: [
@@ -45,6 +47,7 @@ import { LoggingMiddleware } from './common/middleware/logger.middleware';
     MenuModule,
     DeptModule,
     PostModule,
+    LoggerModule,
   ],
   controllers: [],
   providers: [
@@ -59,6 +62,10 @@ import { LoggingMiddleware } from './common/middleware/logger.middleware';
     {
       provide: APP_GUARD,
       useClass: PermissionsGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TransformInterceptor,
     },
   ],
 })

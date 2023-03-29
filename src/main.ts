@@ -8,7 +8,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import { TransformInterceptor } from './interceptor/transform.interceptor';
+// import { TransformInterceptor } from './interceptor/transform.interceptor';
 import * as config from 'config';
 import { HttpExceptionsFilter } from './common/filters/http-exceptions-filter';
 import { ExceptionsFilter } from './common/filters/exceptions.filter';
@@ -61,7 +61,6 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
   console.log(join(__dirname, '..', 'public'));
   app.setViewEngine('hbs');
-  app.useGlobalInterceptors(new TransformInterceptor());
   // 所有异常
   app.useGlobalFilters(new ExceptionsFilter());
   app.useGlobalFilters(new HttpExceptionsFilter());
