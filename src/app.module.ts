@@ -28,7 +28,7 @@ import { RolesService } from './system/roles/roles.service';
 import { LoggingMiddleware } from './common/middleware/logger.middleware';
 import { LoggerModule } from './infra/logger/logger.module';
 import { TransformInterceptor } from './interceptor/transform.interceptor';
-// import * as requestIp from 'request-ip';
+
 @Module({
   imports: [
     UserModule,
